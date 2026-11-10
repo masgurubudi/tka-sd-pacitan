@@ -147,7 +147,7 @@ try{
 }catch(e){FB=null;}
 var SCORE_COLLECTION="tryout_tka_sd";
 var TOTAL_Q=30, TOTAL_TIME=3600; /* 60 menit */
-/* Daftar SMP se-Kabupaten Pacitan (nama, NPSN, kecamatan) — sumber: data publik Kemendikdasmen 2026 */
+/* Daftar SD/MI se-Kabupaten Pacitan (nama, NPSN, kecamatan) — sumber: data publik Kemendikdasmen 2026 */
 var SCHOOLS=[
 ["MI GUPPI BORANG", "60714142", "Arjosari"],
 ["MI GUPPI GEMBONG", "60714143", "Arjosari"],
@@ -690,7 +690,7 @@ var store=(function(){
     set:function(s){try{localStorage.setItem(KEY,JSON.stringify(s));}catch(e){}}
   };
 })();
-function defaults(){return{screen:"menu",nama:"",jenjang:"VI",rombel:"",kecamatan:"",npsn:"",sekolah:"",materi:0,
+function defaults(){return{screen:"menu",nama:"",jenjang:"VI",rombel:"",kecamatan:"",sekolah:"",materi:0,
   answers:null,cur:0,startAt:0,deadline:0,result:null,saved:0,bests:{},menuMsg:null,confirmOpen:false,copied:false};}
 var S=store.get(defaults());
 if(S.screen==="game"&&(!S.answers||!S.deadline))S.screen="menu";
@@ -757,9 +757,8 @@ function syncMenuInputs(){
   var nm=document.getElementById("tk-nama"),rb=document.getElementById("tk-rombel");
   if(nm)S.nama=nm.value;
   if(rb)S.rombel=rb.value.trim().toUpperCase().slice(0,3);
-  var kc=document.getElementById("tk-kecamatan"),np=document.getElementById("tk-npsn");
+  var kc=document.getElementById("tk-kecamatan");
   if(kc)S.kecamatan=kc.value;
-  if(np)S.npsn=np.value.trim();
 }
 
 /* ===== Alur sesi ===== */
@@ -786,11 +785,6 @@ function startGame(){
   var sk=resolveSchool();
   if(!S.nama.trim()||!S.jenjang||!S.kecamatan||!sk){
     set({menuMsg:"Isi nama, pilih kecamatan, dan pilih sekolah dari daftar ya!"});return;
-  }
-  var entry=null;
-  for(var i=0;i<SCHOOLS.length;i++)if(SCHOOLS[i][0]===sk){entry=SCHOOLS[i];break;}
-  if(!entry||(S.npsn||"").trim()!==entry[1]){
-    set({menuMsg:"NPSN tidak cocok dengan sekolah yang dipilih. Periksa lagi NPSN sekolahmu!"});return;
   }
   S.sekolah=sk;
   var now=Date.now();
@@ -869,7 +863,6 @@ function menuHTML(){
     '<option value="">— Pilih kecamatan —</option>'+
     KECAMATAN.map(function(k){return '<option value="'+k+'"'+(S.kecamatan===k?" selected":"")+">Kecamatan "+k+"</option>";}).join("")+"</select>";
   h+='<div class="tk-label">Nama Sekolah</div>'+schoolComboHTML();
-  h+='<div class="tk-label">NPSN Sekolah</div><input id="tk-npsn" class="tk-input" type="text" inputmode="numeric" maxlength="8" placeholder="8 digit NPSN sekolah..." value="'+esc(S.npsn||"")+'">';
   h+='<div class="tk-label">Pilih Paket</div>';
   h+=BANK.map(function(m,i){
     var best=S.bests[m.nama];
@@ -975,8 +968,6 @@ function resultHTML(){
 function bindMenuExtras(){
   var kc=document.getElementById("tk-kecamatan");
   if(kc)kc.addEventListener("change",function(){syncMenuInputs();S.sekolah="";save();render();});
-  var np=document.getElementById("tk-npsn");
-  if(np)np.addEventListener("input",function(){S.npsn=np.value.trim();save();});
 }
 function fmtAns(it,a){
   var letters=["A","B","C","D"];

@@ -5,7 +5,7 @@ Aplikasi Try Out TKA Matematika untuk SD/MI se-Kabupaten Pacitan.
 waktu 60 menit per paket.
 
 - Halaman siswa: `index.html` — pilih paket, isi nama + kelas, pilih kecamatan,
-  pilih sekolah, masukkan NPSN sekolah (gate), kerjakan 30 soal, nilai langsung tampil
+  pilih sekolah, kerjakan 30 soal, nilai langsung tampil
   beserta rincian jawaban dan pembahasan.
 - Halaman guru: `guru.html` — masuk dengan PIN (NPSN sekolah atau PIN master),
   Matriks Nilai per siswa (nilai terbaik per paket), saringan kecamatan, Export Excel.
