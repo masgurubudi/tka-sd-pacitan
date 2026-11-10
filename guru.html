@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="id"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Halaman Guru — Try Out TKA SD/MI</title>
+<style>
+:root{
+  --bg:#f1f2f6; --surface:#ffffff; --surface-muted:#eef0f4;
+  --text:#1c1c22; --muted:#6b6b76; --border:#e0e2e9;
+  --accent:#4f46e5; --on-accent:#ffffff; --focus:#4f46e5;
+  --shadow:rgba(20,20,40,.10); --ok:#1f9d63; --bad:#e5484d; --gold:#c9a227;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#0b0b10; --surface:#17171d; --surface-muted:#23232c;
+    --text:#f4f4f6; --muted:#a2a2b0; --border:#34343e;
+    --accent:#818cf8; --on-accent:#0b0b10; --focus:#818cf8;
+    --shadow:rgba(0,0,0,.45);
+  }
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  min-height:100vh;padding:22px 14px}
+#g-root{width:100%;max-width:1080px;margin:0 auto}
+.g-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:22px;box-shadow:0 4px 18px var(--shadow)}
+h2.g-title{font-size:22px;font-weight:800;text-align:center;margin:0 0 4px}
+.g-sub{text-align:center;color:var(--muted);font-size:13px;margin:0 0 14px;line-height:1.55}
+.g-label{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin:14px 0 8px}
+.g-input,.g-select{width:100%;padding:12px 14px;border-radius:12px;border:1.5px solid var(--border);background:var(--surface-muted);color:var(--text);font-size:15px;font-weight:600}
+.g-input:focus,.g-select:focus{outline:2px solid var(--focus);outline-offset:1px}
+.g-btn{width:100%;padding:14px;border:none;border-radius:14px;background:var(--accent);color:var(--on-accent);font-size:16px;font-weight:800;cursor:pointer;margin-top:16px}
+.g-btn.sm{width:auto;padding:9px 16px;font-size:13.5px;margin-top:0}
+.g-btn.ghost{background:var(--surface-muted);color:var(--text);border:1px solid var(--border)}
+.g-err{min-height:20px;text-align:center;font-weight:700;font-size:13px;color:var(--bad);margin-top:10px}
+.g-dd{position:relative}
+.g-ddlist{position:absolute;top:100%;left:0;right:0;max-height:260px;overflow-y:auto;background:var(--surface);border:1.5px solid var(--border);border-radius:12px;margin-top:4px;z-index:60;display:none;box-shadow:0 8px 24px var(--shadow)}
+.g-dditem{padding:10px 14px;cursor:pointer;border-bottom:1px solid var(--border)}
+.g-dditem:last-child{border-bottom:none}
+.g-dditem b{display:block;font-size:14px}
+.g-dditem span{font-size:11px;color:var(--muted)}
+.g-ddempty{padding:14px;text-align:center;color:var(--muted);font-size:13px}
+.g-meta{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.g-meta b{font-size:17px}
+.g-meta span{font-size:12.5px;color:var(--muted);display:block;margin-top:2px}
+.g-tabs{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0 6px}
+.g-tab{flex:1;min-width:130px;padding:10px 8px;border-radius:10px;border:1.5px solid var(--border);background:var(--surface-muted);color:var(--text);font-weight:700;font-size:13px;cursor:pointer}
+.g-tab.sel{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.g-filters{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.g-filters .g-input,.g-filters .g-select{flex:1;min-width:140px;padding:10px 12px;font-size:14px}
+.g-stats{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.g-stat{flex:1;min-width:110px;background:var(--surface-muted);border-radius:12px;padding:10px;text-align:center}
+.g-stat b{font-size:19px;display:block}
+.g-stat span{font-size:11px;color:var(--muted)}
+.g-tablewrap{overflow-x:auto;margin-top:6px}
+table.g-table{width:100%;border-collapse:collapse;font-size:13.5px;min-width:620px}
+table.g-table.matrix{min-width:960px}
+table.g-table th{background:var(--surface-muted);padding:10px 8px;text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.03em;border-bottom:2px solid var(--border);white-space:nowrap}
+table.g-table td{padding:8px;border-bottom:1px solid var(--border);vertical-align:top}
+table.g-table td.num,table.g-table th.num{text-align:center}
+.g-nilai{font-weight:800;font-size:15px;white-space:nowrap}
+.g-empty{text-align:center;color:var(--muted);padding:26px 10px;font-size:14px;line-height:1.6}
+.g-mut{color:var(--muted);font-size:12px}
+.g-top{font-weight:800;color:var(--gold);font-size:16px}
+.g-sectiontitle{font-size:16px;font-weight:800;margin:22px 0 4px}
+.g-toolbar{display:flex;justify-content:flex-end;margin-top:10px}
+button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+</style>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+</head>
+<body>
+<div id="g-root"><div class="g-card" id="g-body"></div></div>
+<script>
+(function(){
+"use strict";
+var MASTER_PIN="112233"; /* PIN master guru — ganti di sini bila perlu */
+var COLLECTION="tryout_tka_sd";
+var MATERI=["Paket 1 — Bilangan Rasional","Paket 2 — Objek Geometri","Paket 3 — Pengukuran","Paket 4 — Penyajian dan Penggunaan Data"];
+var KECAMATAN=["Arjosari", "Bandar", "Donorojo", "Kebonagung", "Nawangan", "Ngadirojo", "Pacitan", "Pringkuku", "Punung", "Sudimoro", "Tegalombo", "Tulakan"];
+/* Daftar SD/MI se-Kabupaten Pacitan (nama, NPSN, kecamatan) — sumber: data publik Kemendikdasmen 2026 */
+var SCHOOLS=[
+["MI GUPPI BORANG", "60714142", "Arjosari"],
+["MI GUPPI GEMBONG", "60714143", "Arjosari"],
+["MI GUPPI JATIMALANG", "60714144", "Arjosari"],
+["MI GUPPI JETIS KIDUL", "60714145", "Arjosari"],
+["MI GUPPI KARANG GEDE", "60714146", "Arjosari"],
+["MI GUPPI KARANGREJO", "60714147", "Arjosari"],
+["MI GUPPI KEDUNGBENDO", "60714148", "Arjosari"],
+["MI GUPPI MLATI", "60714149", "Arjosari"],
+["MI GUPPI PAGUTAN", "60714150", "Arjosari"],
+["MI GUPPI SEDAYU I", "60714151", "Arjosari"],
+["MI GUPPI SEDAYU II", "60714152", "Arjosari"],
+["MI GUPPI TEMON", "60714153", "Arjosari"],
+["SD NEGERI ARJOSARI", "20511288", "Arjosari"],
+["SD NEGERI BORANG I", "20511491", "Arjosari"],
+["SD NEGERI BORANG II", "20511490", "Arjosari"],
+["SD NEGERI GAYUHAN", "20511482", "Arjosari"],
+["SD NEGERI GEGERAN", "20511536", "Arjosari"],
+["SD NEGERI GEMBONG I", "20511530", "Arjosari"],
+["SD NEGERI GEMBONG II", "20511529", "Arjosari"],
+["SD NEGERI GUNUNGSARI I", "20511526", "Arjosari"],
+["SD NEGERI GUNUNGSARI II", "20511515", "Arjosari"],
+["SD NEGERI GUNUNGSARI III", "20511514", "Arjosari"],
+["SD NEGERI JATIMALANG", "20555441", "Arjosari"],
+["SD NEGERI JETISKIDUL I", "20511409", "Arjosari"],
+["SD NEGERI JETISKIDUL II", "20511408", "Arjosari"],
+["SD NEGERI KARANGGEDE I", "20511416", "Arjosari"],
+["SD NEGERI KARANGGEDE II", "20511415", "Arjosari"],
+["SD NEGERI KARANGGEDE III", "20511414", "Arjosari"],
+["SD NEGERI KARANGGEDE IV", "20511403", "Arjosari"],
+["SD NEGERI KARANGREJO I", "20511390", "Arjosari"],
+["SD NEGERI KARANGREJO II", "20511389", "Arjosari"],
+["SD NEGERI KEDUNGBENDO I", "20511396", "Arjosari"],
+["SD NEGERI KEDUNGBENDO II", "20511395", "Arjosari"],
+["SD NEGERI MANGUNHARJO", "20555439", "Arjosari"],
+["SD NEGERI MANGUNHARJO III", "20511436", "Arjosari"],
+["SD NEGERI MLATI I", "20510876", "Arjosari"],
+["SD NEGERI MLATI II", "20510875", "Arjosari"],
+["SD NEGERI MLATI III", "20510874", "Arjosari"],
+["SD NEGERI PAGUTAN", "20510927", "Arjosari"],
+["SD NEGERI SEDAYU I", "20510779", "Arjosari"],
+["SD NEGERI SEDAYU II", "20510787", "Arjosari"],
+["SD NEGERI TEMON I", "20511058", "Arjosari"],
+["SD NEGERI TEMON II", "20511057", "Arjosari"],
+["SD NEGERI TEMON III", "20511056", "Arjosari"],
+["SD NEGERI TEMON IV", "20511055", "Arjosari"],
+["SD NEGERI TREMAS", "20511026", "Arjosari"],
+["MI AL AMIN", "70034630", "Bandar"],
+["MI GUPPI TUMPUK", "60714154", "Bandar"],
+["MI MUHAMMADIYAH BANDAR I", "60714155", "Bandar"],
+["MI MUHAMMADIYAH BANDAR II", "60714156", "Bandar"],
+["MI MUHAMMADIYAH JERUK", "60714157", "Bandar"],
+["MI MUHAMMADIYAH NGUNUT", "60714158", "Bandar"],
+["MI PROGRAM KHUSUS AL ISHLAH", "70035180", "Bandar"],
+["SD NEGERI BANDAR I", "20555440", "Bandar"],
+["SD NEGERI BANDAR II", "20511261", "Bandar"],
+["SD NEGERI BANDAR III", "20511260", "Bandar"],
+["SD NEGERI BANDAR V", "20511258", "Bandar"],
+["SD NEGERI BANGUNSARI I", "20511257", "Bandar"],
+["SD NEGERI BANGUNSARI II", "20511274", "Bandar"],
+["SD NEGERI BANGUNSARI III", "20511273", "Bandar"],
+["SD NEGERI JERUK I", "20511523", "Bandar"],
+["SD NEGERI JERUK II", "20511522", "Bandar"],
+["SD NEGERI JERUK III", "20511521", "Bandar"],
+["SD NEGERI JERUK IV", "20511520", "Bandar"],
+["SD NEGERI JERUK V", "20511519", "Bandar"],
+["SD NEGERI KLEDUNG I", "20511459", "Bandar"],
+["SD NEGERI KLEDUNG II", "20511458", "Bandar"],
+["SD NEGERI KLEDUNG III", "20511457", "Bandar"],
+["SD NEGERI NGUNUT I", "20510863", "Bandar"],
+["SD NEGERI NGUNUT II", "20510852", "Bandar"],
+["SD NEGERI NGUNUT III", "20510935", "Bandar"],
+["SD NEGERI NGUNUT IV", "20510924", "Bandar"],
+["SD NEGERI PETUNGSINARANG I", "20510896", "Bandar"],
+["SD NEGERI PETUNGSINARANG II", "20510904", "Bandar"],
+["SD NEGERI PETUNGSINARANG III", "20510905", "Bandar"],
+["SD NEGERI PETUNGSINARANG IV", "20510913", "Bandar"],
+["SD NEGERI PETUNGSINARANG V", "20510912", "Bandar"],
+["SD NEGERI TUMPUK I", "20511031", "Bandar"],
+["SD NEGERI TUMPUK II", "20511032", "Bandar"],
+["SD NEGERI TUMPUK III", "20511040", "Bandar"],
+["SD NEGERI WATUPATOK I", "20511037", "Bandar"],
+["SD NEGERI WATUPATOK II", "20511036", "Bandar"],
+["SD NEGERI WATUPATOK III", "20511035", "Bandar"],
+["SDIT AL BANNA", "69929986", "Bandar"],
+["MI GUPPI KLEPU", "60714161", "Donorojo"],
+["MI GUPPI SEKAR", "60714162", "Donorojo"],
+["MI GUPPI SENDANG", "60714163", "Donorojo"],
+["MI GUPPI WIDORO", "60714164", "Donorojo"],
+["MI NURROHMAN", "60714165", "Donorojo"],
+["MIN 4 PACITAN", "60714160", "Donorojo"],
+["SD NEGERI BELAH I", "20511270", "Donorojo"],
+["SD NEGERI BELAH II", "20511269", "Donorojo"],
+["SD NEGERI BELAH III", "20511268", "Donorojo"],
+["SD NEGERI CEMENG I", "20511500", "Donorojo"],
+["SD NEGERI CEMENG II", "20511499", "Donorojo"],
+["SD NEGERI CEMENG III", "20511498", "Donorojo"],
+["SD NEGERI DONOROJO I", "20511469", "Donorojo"],
+["SD NEGERI DONOROJO II", "20511468", "Donorojo"],
+["SD NEGERI DONOROJO III", "20511467", "Donorojo"],
+["SD NEGERI GEDOMPOL I", "20511478", "Donorojo"],
+["SD NEGERI GEDOMPOL II", "20511477", "Donorojo"],
+["SD NEGERI GEDOMPOL III", "20511466", "Donorojo"],
+["SD NEGERI GENDARAN I", "20511539", "Donorojo"],
+["SD NEGERI GENDARAN II", "20511547", "Donorojo"],
+["SD NEGERI KALAK I", "20511405", "Donorojo"],
+["SD NEGERI KALAK II", "20511404", "Donorojo"],
+["SD NEGERI KLEPU 3", "20551733", "Donorojo"],
+["SD NEGERI KLEPU IV", "20511428", "Donorojo"],
+["SD NEGERI SAWAHAN I", "20510776", "Donorojo"],
+["SD NEGERI SAWAHAN II", "20510778", "Donorojo"],
+["SD NEGERI SEKAR I", "20510784", "Donorojo"],
+["SD NEGERI SEKAR II", "20510783", "Donorojo"],
+["SD NEGERI SENDANG I", "20510839", "Donorojo"],
+["SD NEGERI SENDANG II", "20510838", "Donorojo"],
+["SD NEGERI SENDANG III", "20510837", "Donorojo"],
+["SD NEGERI SUKODONO I", "20510812", "Donorojo"],
+["SD NEGERI SUKODONO II", "20510820", "Donorojo"],
+["SD NEGERI SUKODONO III", "20510821", "Donorojo"],
+["SD NEGERI WIDORO I", "20511033", "Donorojo"],
+["SD NEGERI WIDORO II", "20511022", "Donorojo"],
+["SD Negeri KLEPU 1", "20551732", "Donorojo"],
+["SD Negeri KLEPU 2", "20511431", "Donorojo"],
+["MI GUPPI KLESEM", "60714166", "Kebonagung"],
+["MI GUPPI SIDOMULYO", "60714168", "Kebonagung"],
+["MI MUHAMMADIYAH GAWANG", "60714169", "Kebonagung"],
+["MI MUHAMMADIYAH GEMBUK I", "60714170", "Kebonagung"],
+["MI MUHAMMADIYAH GEMBUK II", "60714171", "Kebonagung"],
+["MI MUHAMMADIYAH KARANGANYAR", "60714172", "Kebonagung"],
+["MI MUHAMMADIYAH KETEPUNG", "60714173", "Kebonagung"],
+["MI MUHAMMADIYAH KETRO I", "60714174", "Kebonagung"],
+["MI MUHAMMADIYAH KETRO II", "60714175", "Kebonagung"],
+["MI MUHAMMADIYAH SANGGRAHAN", "60714178", "Kebonagung"],
+["SD NEGERI BANJARJO", "20511272", "Kebonagung"],
+["SD NEGERI GAWANG I", "20511484", "Kebonagung"],
+["SD NEGERI GAWANG II", "20511483", "Kebonagung"],
+["SD NEGERI GEMBUK I", "20511537", "Kebonagung"],
+["SD NEGERI GEMBUK II", "20511538", "Kebonagung"],
+["SD NEGERI KALIPELUS", "20511419", "Kebonagung"],
+["SD NEGERI KARANGANYAR I", "20511418", "Kebonagung"],
+["SD NEGERI KARANGANYAR II", "20511417", "Kebonagung"],
+["SD NEGERI KARANGNONGKO I", "20511402", "Kebonagung"],
+["SD NEGERI KARANGNONGKO II", "20511401", "Kebonagung"],
+["SD NEGERI KATIPUGAL I", "20511384", "Kebonagung"],
+["SD NEGERI KATIPUGAL II", "20511383", "Kebonagung"],
+["SD NEGERI KEBONAGUNG", "20511400", "Kebonagung"],
+["SD NEGERI KETEPUNG I", "20511447", "Kebonagung"],
+["SD NEGERI KETEPUNG II", "20511446", "Kebonagung"],
+["SD NEGERI KETRO I", "20511455", "Kebonagung"],
+["SD NEGERI KLESEM I", "20511425", "Kebonagung"],
+["SD NEGERI KLESEM II", "20511424", "Kebonagung"],
+["SD NEGERI MANTREN", "20511435", "Kebonagung"],
+["SD NEGERI PLUMBUNGAN", "20510796", "Kebonagung"],
+["SD NEGERI PUNJUNG I", "20510804", "Kebonagung"],
+["SD NEGERI PUNJUNG II", "20510803", "Kebonagung"],
+["SD NEGERI PURWOASRI I", "20510774", "Kebonagung"],
+["SD NEGERI PURWOASRI II", "20510773", "Kebonagung"],
+["SD NEGERI SANGGRAHAN I", "20510769", "Kebonagung"],
+["SD NEGERI SANGGRAHAN II", "20510768", "Kebonagung"],
+["SD NEGERI SIDOMULYO II", "20510842", "Kebonagung"],
+["SD NEGERI SIDOMULYO III", "20510850", "Kebonagung"],
+["SD NEGERI WONOGONDO I", "20511094", "Kebonagung"],
+["SD NEGERI WONOGONDO II", "20511202", "Kebonagung"],
+["SD NEGERI WORAWARI I", "20511069", "Kebonagung"],
+["SD NEGERI WORAWARI II", "20511068", "Kebonagung"],
+["SD Negeri KETRO 2", "20511463", "Kebonagung"],
+["SD Negeri SIDOMULYO 1", "20510833", "Kebonagung"],
+["MI MUHAMMADIYAH JETISLOR", "60714179", "Nawangan"],
+["MI MUHAMMADIYAH MUJING", "60714180", "Nawangan"],
+["MI MUHAMMADIYAH NAWANGAN", "60714181", "Nawangan"],
+["MI MUHAMMADIYAH PENGGUNG", "60714182", "Nawangan"],
+["MI MUHAMMADIYAH SEMPU", "60714183", "Nawangan"],
+["MI PROGRAM KHUSUS INSAN MADANI", "69982994", "Nawangan"],
+["SD NEGERI GONDANG I", "20511543", "Nawangan"],
+["SD NEGERI GONDANG II", "20511542", "Nawangan"],
+["SD NEGERI GONDANG III", "20511541", "Nawangan"],
+["SD NEGERI JETIS LOR I", "20511422", "Nawangan"],
+["SD NEGERI JETIS LOR II", "20511411", "Nawangan"],
+["SD NEGERI JETIS LOR III", "20511410", "Nawangan"],
+["SD NEGERI MUJING I", "20510882", "Nawangan"],
+["SD NEGERI MUJING II", "20510883", "Nawangan"],
+["SD NEGERI MUJING III", "20510893", "Nawangan"],
+["SD NEGERI NAWANGAN I", "20510891", "Nawangan"],
+["SD NEGERI NAWANGAN II", "20510889", "Nawangan"],
+["SD NEGERI NAWANGAN III", "20510887", "Nawangan"],
+["SD NEGERI NAWANGAN IV", "20510886", "Nawangan"],
+["SD NEGERI NAWANGAN V", "20510885", "Nawangan"],
+["SD NEGERI NGROMO I", "20510869", "Nawangan"],
+["SD NEGERI NGROMO II", "20510868", "Nawangan"],
+["SD NEGERI NGROMO III", "20510867", "Nawangan"],
+["SD NEGERI PAKIS BARU I", "20510916", "Nawangan"],
+["SD NEGERI PAKIS BARU II", "20510915", "Nawangan"],
+["SD NEGERI PAKIS BARU III", "20510914", "Nawangan"],
+["SD NEGERI PENGGUNG I", "20510900", "Nawangan"],
+["SD NEGERI PENGGUNG II", "20510899", "Nawangan"],
+["SD NEGERI PENGGUNG III", "20510898", "Nawangan"],
+["SD NEGERI PENGGUNG IV", "20510897", "Nawangan"],
+["SD NEGERI SEMPU I", "20510781", "Nawangan"],
+["SD NEGERI SEMPU II", "20510780", "Nawangan"],
+["SD NEGERI SEMPU III", "20510851", "Nawangan"],
+["SD NEGERI SEMPU IV", "20510840", "Nawangan"],
+["SD NEGERI TOKAWI I", "20511041", "Nawangan"],
+["SD NEGERI TOKAWI II", "20511030", "Nawangan"],
+["SD NEGERI TOKAWI III", "20511029", "Nawangan"],
+["SD NEGERI TOKAWI IV", "20511028", "Nawangan"],
+["MI GUPPI BOGOHARJO", "60714184", "Ngadirojo"],
+["MI GUPPI HADIWARNO", "60714185", "Ngadirojo"],
+["MI MUHAMMADIYAH SIDOMULYO", "60714187", "Ngadirojo"],
+["MIN 5 PACITAN", "60714186", "Ngadirojo"],
+["SD ISLAM NURUL YAQIN", "20537130", "Ngadirojo"],
+["SD ISLAM TERPADU TAWAKKAL", "69760667", "Ngadirojo"],
+["SD NEGERI BODAG I", "20511267", "Ngadirojo"],
+["SD NEGERI BODAG II", "20511256", "Ngadirojo"],
+["SD NEGERI BOGOHARJO I", "20511381", "Ngadirojo"],
+["SD NEGERI BOGOHARJO II", "20511506", "Ngadirojo"],
+["SD NEGERI CANGKRING", "20511501", "Ngadirojo"],
+["SD NEGERI COKROKEMBANG I", "20511487", "Ngadirojo"],
+["SD NEGERI COKROKEMBANG II", "20511486", "Ngadirojo"],
+["SD NEGERI COKROKEMBANG III", "20511485", "Ngadirojo"],
+["SD NEGERI HADILUWIH I", "20511513", "Ngadirojo"],
+["SD NEGERI HADILUWIH II", "20511512", "Ngadirojo"],
+["SD NEGERI HADIWARNO I", "20511511", "Ngadirojo"],
+["SD NEGERI HADIWARNO II", "20511510", "Ngadirojo"],
+["SD NEGERI NGADIROJO I", "20510872", "Ngadirojo"],
+["SD NEGERI NGADIROJO II", "20510871", "Ngadirojo"],
+["SD NEGERI NOGOSARI I", "20510923", "Ngadirojo"],
+["SD NEGERI NOGOSARI II", "20510922", "Ngadirojo"],
+["SD NEGERI PAGEREJO I", "20510925", "Ngadirojo"],
+["SD NEGERI PAGEREJO II", "20510926", "Ngadirojo"],
+["SD NEGERI PAGEREJO III", "20510934", "Ngadirojo"],
+["SD NEGERI PAGEREJO IV", "20510933", "Ngadirojo"],
+["SD NEGERI SIDOMULYO I", "20510834", "Ngadirojo"],
+["SD NEGERI SIDOMULYO IV", "20510848", "Ngadirojo"],
+["SD NEGERI SIDOMULYO V", "20510847", "Ngadirojo"],
+["SD NEGERI TANJUNG LOR I", "20511048", "Ngadirojo"],
+["SD NEGERI TANJUNG LOR II", "20511047", "Ngadirojo"],
+["SD NEGERI TANJUNGPURO I", "20511046", "Ngadirojo"],
+["SD NEGERI TANJUNGPURO II", "20511045", "Ngadirojo"],
+["SD NEGERI WIYORO I", "20511203", "Ngadirojo"],
+["SD NEGERI WIYORO II", "20511092", "Ngadirojo"],
+["SD NEGERI WONOASRI I", "20511099", "Ngadirojo"],
+["SD NEGERI WONOASRI II", "20511096", "Ngadirojo"],
+["SD NEGERI WONODADIKULON I", "20511089", "Ngadirojo"],
+["SD NEGERI WONODADIKULON II", "20511088", "Ngadirojo"],
+["SD NEGERI WONODADIKULON III", "20511087", "Ngadirojo"],
+["SD NEGERI WONODADIKULON IV", "20511086", "Ngadirojo"],
+["SD NEGERI WONODADIWETAN I", "20511085", "Ngadirojo"],
+["SD NEGERI WONODADIWETAN II", "20511093", "Ngadirojo"],
+["SD NEGERI WONOKARTO I", "20511201", "Ngadirojo"],
+["SD NEGERI WONOKARTO II", "20511097", "Ngadirojo"],
+["SD NEGERI WONOKARTO III", "20511095", "Ngadirojo"],
+["SD NEGERI WONOSOBO I", "20511200", "Ngadirojo"],
+["SD NEGERI WONOSOBO II", "20511098", "Ngadirojo"],
+["SD Negeri SIDOMULYO 2", "20510841", "Ngadirojo"],
+["SD Negeri SIDOMULYO 3", "20510849", "Ngadirojo"],
+["MI AL HUDA PLOSO", "60714189", "Pacitan"],
+["MI AL-ISTIQOMAH", "69854248", "Pacitan"],
+["MI GUPPI BANGUNSARI", "60714191", "Pacitan"],
+["MI GUPPI PONGGOK", "60714192", "Pacitan"],
+["MI GUPPI SEMANTEN", "60714193", "Pacitan"],
+["MI GUPPI TANJUNGSARI", "60714194", "Pacitan"],
+["MI GUPPI WIDORO", "60714195", "Pacitan"],
+["MI MUHAMMADIYAH BALEHARJO", "60714190", "Pacitan"],
+["MIN 3 PACITAN", "60714188", "Pacitan"],
+["SD AL MUHAJIRIN", "20537128", "Pacitan"],
+["SD ALAM PACITAN", "20569288", "Pacitan"],
+["SD INTEGRAL HAJAR ASWAD", "69892675", "Pacitan"],
+["SD ISLAM INSAN CENDEKIA", "20540376", "Pacitan"],
+["SD ISLAM TERPADU AR RAHMAH", "20537129", "Pacitan"],
+["SD N NANGGUNGAN", "20510892", "Pacitan"],
+["SD NEGERI 1 PLOSO", "20510909", "Pacitan"],
+["SD NEGERI ARJOWINANGUN", "20511276", "Pacitan"],
+["SD NEGERI BALEHARJO I", "20511264", "Pacitan"],
+["SD NEGERI BALEHARJO II", "20511263", "Pacitan"],
+["SD NEGERI BANGUNSARI", "20555436", "Pacitan"],
+["SD NEGERI BANJARSARI", "20511271", "Pacitan"],
+["SD NEGERI BOLOSINGO", "20537131", "Pacitan"],
+["SD NEGERI KAYEN I", "20511391", "Pacitan"],
+["SD NEGERI KAYEN II", "20511392", "Pacitan"],
+["SD NEGERI KEMBANG", "20511394", "Pacitan"],
+["SD NEGERI MENTORO", "20510877", "Pacitan"],
+["SD NEGERI PACITAN", "20510921", "Pacitan"],
+["SD NEGERI PLOSO 2 PACITAN", "20510906", "Pacitan"],
+["SD NEGERI PONGGOK", "20510794", "Pacitan"],
+["SD NEGERI PUCANGSEWU", "20510805", "Pacitan"],
+["SD NEGERI PURWOREJO", "20510772", "Pacitan"],
+["SD NEGERI SAMBONG I", "20510771", "Pacitan"],
+["SD NEGERI SAMBONG II", "20510770", "Pacitan"],
+["SD NEGERI SEDENG I", "20510786", "Pacitan"],
+["SD NEGERI SEDENG II", "20510785", "Pacitan"],
+["SD NEGERI SEMANTEN", "20510782", "Pacitan"],
+["SD NEGERI SIDOHARJO", "20510836", "Pacitan"],
+["SD NEGERI SIRNOBOYO I", "20510846", "Pacitan"],
+["SD NEGERI SIRNOBOYO II", "20510845", "Pacitan"],
+["SD NEGERI SIRNOBOYO III", "20510844", "Pacitan"],
+["SD NEGERI SUKOHARJO", "20510813", "Pacitan"],
+["SD NEGERI SUMBERHARJO", "20510825", "Pacitan"],
+["SD NEGERI TAMBAKREJO I", "20511050", "Pacitan"],
+["SD NEGERI TAMBAKREJO II", "20511049", "Pacitan"],
+["SD NEGERI TANJUNGSARI", "20511044", "Pacitan"],
+["SD NEGERI WIDORO", "20511034", "Pacitan"],
+["SDN MENADI", "20510894", "Pacitan"],
+["MI DARUL HUDA", "70010141", "Pringkuku"],
+["MI JABAL NUR", "70037558", "Pringkuku"],
+["MI MUHAMMADIYAH CANDI", "60714200", "Pringkuku"],
+["MI MUHAMMADIYAH GLINGGANGAN", "60714198", "Pringkuku"],
+["MI MUHAMMADIYAH NGADIREJAN", "60714201", "Pringkuku"],
+["MI MUHAMMADIYAH POKO", "60714202", "Pringkuku"],
+["MI MUHAMMADIYAH PRINGKUKU", "60714203", "Pringkuku"],
+["SD NEGERI CANDI I", "20511505", "Pringkuku"],
+["SD NEGERI CANDI II", "20511504", "Pringkuku"],
+["SD NEGERI CANDI III", "20511503", "Pringkuku"],
+["SD NEGERI CANDI IV", "20511502", "Pringkuku"],
+["SD NEGERI DADAPAN 2", "20511474", "Pringkuku"],
+["SD NEGERI DADAPAN I", "20511473", "Pringkuku"],
+["SD NEGERI DERSONO I", "20511471", "Pringkuku"],
+["SD NEGERI DERSONO II", "20511470", "Pringkuku"],
+["SD NEGERI DERSONO III", "20511472", "Pringkuku"],
+["SD NEGERI GLINGGANGAN I", "20511546", "Pringkuku"],
+["SD NEGERI GLINGGANGAN II", "20511545", "Pringkuku"],
+["SD NEGERI GLINGGANGAN III", "20511544", "Pringkuku"],
+["SD NEGERI JLUBANG I", "20511407", "Pringkuku"],
+["SD NEGERI JLUBANG II", "20511406", "Pringkuku"],
+["SD NEGERI NGADIREJAN", "20555437", "Pringkuku"],
+["SD NEGERI PELEM I", "20510902", "Pringkuku"],
+["SD NEGERI PELEM II", "20510903", "Pringkuku"],
+["SD NEGERI PELEM III", "20510901", "Pringkuku"],
+["SD NEGERI POKO", "20510795", "Pringkuku"],
+["SD NEGERI PRINGKUKU 3", "20510800", "Pringkuku"],
+["SD NEGERI PRINGKUKU I", "20510793", "Pringkuku"],
+["SD NEGERI PRINGKUKU II", "20510792", "Pringkuku"],
+["SD NEGERI SOBO", "20510843", "Pringkuku"],
+["SD NEGERI SUGIHWARAS I", "20510815", "Pringkuku"],
+["SD NEGERI SUGIHWARAS II", "20510814", "Pringkuku"],
+["SD NEGERI TAMANASRI I", "20511062", "Pringkuku"],
+["SD NEGERI TAMANASRI II", "20511051", "Pringkuku"],
+["SD NEGERI WATUKARUNG", "20511038", "Pringkuku"],
+["MI GUPPI GONDOSARI", "60714204", "Punung"],
+["MI IT NURUL IMAN", "69977683", "Punung"],
+["MI MUHAMMADIYAH PLOSO", "60714205", "Punung"],
+["MI MUHAMMADIYAH PUNUNG", "60714207", "Punung"],
+["MI MUHAMMADIYAH SOOKA", "60714206", "Punung"],
+["SD NEGERI BOMO I", "20511494", "Punung"],
+["SD NEGERI BOMO II", "20511493", "Punung"],
+["SD NEGERI BOMO III", "20511492", "Punung"],
+["SD NEGERI GONDOSARI I", "20511540", "Punung"],
+["SD NEGERI GONDOSARI II", "20511528", "Punung"],
+["SD NEGERI GONDOSARI III", "20511527", "Punung"],
+["SD NEGERI KEBONSARI", "20511397", "Punung"],
+["SD NEGERI KENDAL", "20511452", "Punung"],
+["SD NEGERI MANTREN I", "20511434", "Punung"],
+["SD NEGERI MANTREN II", "20511423", "Punung"],
+["SD NEGERI MENDOLO KIDUL I", "20510881", "Punung"],
+["SD NEGERI MENDOLO KIDUL II", "20510880", "Punung"],
+["SD NEGERI MENDOLO LOR I", "20510879", "Punung"],
+["SD NEGERI MENDOLO LOR II", "20510878", "Punung"],
+["SD NEGERI PITON I", "20510911", "Punung"],
+["SD NEGERI PITON II", "20510910", "Punung"],
+["SD NEGERI PLOSO III", "20510799", "Punung"],
+["SD NEGERI PLOSO IV", "20510797", "Punung"],
+["SD NEGERI PUNUNG I", "20510802", "Punung"],
+["SD NEGERI PUNUNG II", "20510791", "Punung"],
+["SD NEGERI PUNUNG III", "20510790", "Punung"],
+["SD NEGERI PUNUNG IV", "20510788", "Punung"],
+["SD NEGERI PUNUNG VI", "20510775", "Punung"],
+["SD NEGERI SOOKA I", "20510832", "Punung"],
+["SD NEGERI SOOKA II", "20510831", "Punung"],
+["SD NEGERI TINATAR I", "20511054", "Punung"],
+["SD NEGERI TINATAR II", "20511043", "Punung"],
+["SD NEGERI TINATAR III", "20511042", "Punung"],
+["SD NEGERI WARENG", "20511039", "Punung"],
+["SD Negeri PLOSO 1", "20510907", "Punung"],
+["SD Negeri PLOSO 2", "20510895", "Punung"],
+["MI GUPPI PAGERLOR I", "60714208", "Sudimoro"],
+["MI GUPPI PAGERLOR II", "60714209", "Sudimoro"],
+["MI GUPPI SUDIMORO III", "60714211", "Sudimoro"],
+["MI MA'ARIF SUMBEREJO", "60714212", "Sudimoro"],
+["MI MUHAMMADIYAH PAGERKIDUL", "60714213", "Sudimoro"],
+["SD NEGERI GUNUNGREJO I", "20510819", "Sudimoro"],
+["SD NEGERI GUNUNGREJO II", "20510816", "Sudimoro"],
+["SD NEGERI KARANGMULYO I", "20511449", "Sudimoro"],
+["SD NEGERI KARANGMULYO II", "20511448", "Sudimoro"],
+["SD NEGERI KETANGGUNG I", "20511451", "Sudimoro"],
+["SD NEGERI KETANGGUNG II", "20511450", "Sudimoro"],
+["SD NEGERI KLEPU I", "20511442", "Sudimoro"],
+["SD NEGERI KLEPU II", "20537132", "Sudimoro"],
+["SD NEGERI PAGERKIDUL I", "20510932", "Sudimoro"],
+["SD NEGERI PAGERKIDUL II", "20510931", "Sudimoro"],
+["SD NEGERI PAGERLOR I", "20510930", "Sudimoro"],
+["SD NEGERI PAGERLOR II", "20510929", "Sudimoro"],
+["SD NEGERI PAGERLOR III", "20510928", "Sudimoro"],
+["SD NEGERI SEMBOWO I", "20511495", "Sudimoro"],
+["SD NEGERI SEMBOWO II", "20511426", "Sudimoro"],
+["SD NEGERI SUDIMORO I", "20510830", "Sudimoro"],
+["SD NEGERI SUDIMORO II", "20510818", "Sudimoro"],
+["SD NEGERI SUDIMORO III", "20510817", "Sudimoro"],
+["SD NEGERI SUKOREJO I", "20510829", "Sudimoro"],
+["SD NEGERI SUKOREJO II", "20510827", "Sudimoro"],
+["SD NEGERI SUMBEREJO I", "20510828", "Sudimoro"],
+["SD NEGERI SUMBEREJO II", "20510826", "Sudimoro"],
+["SD Negeri KLEPU 3", "20511427", "Sudimoro"],
+["MI MUHAMMADIYAH KASIHAN I", "60714214", "Tegalombo"],
+["MI MUHAMMADIYAH KASIHAN II", "60714215", "Tegalombo"],
+["MI MUHAMMADIYAH KASIHAN III", "60714216", "Tegalombo"],
+["MI MUHAMMADIYAH KASIHAN IV", "60714217", "Tegalombo"],
+["MI MUHAMMADIYAH KASIHAN V", "60714218", "Tegalombo"],
+["MI MUHAMMADIYAH KEBONDALEM", "60714221", "Tegalombo"],
+["MI MUHAMMADIYAH KEMUNING 1", "60714219", "Tegalombo"],
+["MI MUHAMMADIYAH KEMUNING II", "60714220", "Tegalombo"],
+["MI MUHAMMADIYAH NGRECO", "60714222", "Tegalombo"],
+["MI MUHAMMADIYAH PLOSO 1", "60714223", "Tegalombo"],
+["MI MUHAMMADIYAH PLOSO II", "60714224", "Tegalombo"],
+["MI MUHAMMADIYAH PUCANGOMBO", "60714225", "Tegalombo"],
+["MI QURROTA A'YUN TERPADU", "70010186", "Tegalombo"],
+["SD NEGERI GEDANGAN I", "20511480", "Tegalombo"],
+["SD NEGERI GEDANGAN II", "20511479", "Tegalombo"],
+["SD NEGERI GEMAHARJO I", "20511535", "Tegalombo"],
+["SD NEGERI GEMAHARJO II", "20511534", "Tegalombo"],
+["SD NEGERI GEMAHARJO III", "20511533", "Tegalombo"],
+["SD NEGERI GEMAHARJO IV", "20511532", "Tegalombo"],
+["SD NEGERI GEMAHARJO V", "20511531", "Tegalombo"],
+["SD NEGERI KASIHAN I", "20511388", "Tegalombo"],
+["SD NEGERI KASIHAN II", "20511387", "Tegalombo"],
+["SD NEGERI KASIHAN III", "20511386", "Tegalombo"],
+["SD NEGERI KASIHAN IV", "20511385", "Tegalombo"],
+["SD NEGERI KEBONDALEM I", "20511399", "Tegalombo"],
+["SD NEGERI KEBONDALEM II", "20511398", "Tegalombo"],
+["SD NEGERI KEMUNING I", "20511393", "Tegalombo"],
+["SD NEGERI KEMUNING II", "20511382", "Tegalombo"],
+["SD NEGERI KEMUNING III", "20511465", "Tegalombo"],
+["SD NEGERI KEMUNING IV", "20511453", "Tegalombo"],
+["SD NEGERI NGRECO I", "20510855", "Tegalombo"],
+["SD NEGERI NGRECO II", "20510854", "Tegalombo"],
+["SD NEGERI NGRECO III", "20510853", "Tegalombo"],
+["SD NEGERI NGRECO IV", "20510861", "Tegalombo"],
+["SD NEGERI NGRECO V", "20510862", "Tegalombo"],
+["SD NEGERI NGRECO VI", "20510870", "Tegalombo"],
+["SD NEGERI PLOSO 2", "20510810", "Tegalombo"],
+["SD NEGERI PLOSO I", "20510908", "Tegalombo"],
+["SD NEGERI PLOSO III", "20510798", "Tegalombo"],
+["SD NEGERI PUCANGOMBO I", "20510801", "Tegalombo"],
+["SD NEGERI PUCANGOMBO II", "20510809", "Tegalombo"],
+["SD NEGERI PUCANGOMBO III", "20510808", "Tegalombo"],
+["SD NEGERI PUCANGOMBO IV", "20510807", "Tegalombo"],
+["SD NEGERI PUCANGOMBO V", "20510806", "Tegalombo"],
+["SD NEGERI TAHUNAN BARU I", "20510824", "Tegalombo"],
+["SD NEGERI TAHUNAN BARU II", "20510811", "Tegalombo"],
+["SD NEGERI TAHUNAN I", "20510823", "Tegalombo"],
+["SD NEGERI TAHUNAN II", "20510822", "Tegalombo"],
+["SD NEGERI TAHUNAN III", "20510936", "Tegalombo"],
+["SD NEGERI TEGALOMBO 3", "20555442", "Tegalombo"],
+["SD NEGERI TEGALOMBO I", "20511052", "Tegalombo"],
+["SD NEGERI TEGALOMBO II", "20511053", "Tegalombo"],
+["SD NEGERI TEGALOMBO IV", "20511060", "Tegalombo"],
+["MI MUHAMMADIYAH BUBAKAN", "60714228", "Tulakan"],
+["MI MUHAMMADIYAH BUNGUR", "60714229", "Tulakan"],
+["MI MUHAMMADIYAH GASANG", "60714230", "Tulakan"],
+["MI MUHAMMADIYAH JATIGUNUNG I", "60714231", "Tulakan"],
+["MI MUHAMMADIYAH JATIGUNUNG II", "60714232", "Tulakan"],
+["MI MUHAMMADIYAH JATIGUNUNG III", "60714233", "Tulakan"],
+["MI MUHAMMADIYAH JETAK", "60714234", "Tulakan"],
+["MI MUHAMMADIYAH KALIKUNING I", "60714235", "Tulakan"],
+["MI MUHAMMADIYAH KALIKUNING II", "60714236", "Tulakan"],
+["MI MUHAMMADIYAH KALIKUNING III", "60714237", "Tulakan"],
+["MI MUHAMMADIYAH KLUWIH 2", "60714239", "Tulakan"],
+["MI MUHAMMADIYAH KLUWIH I", "60714238", "Tulakan"],
+["MI MUHAMMADIYAH NGLARAN I", "60714240", "Tulakan"],
+["MI MUHAMMADIYAH NGLARAN II", "60714241", "Tulakan"],
+["MI MUHAMMADIYAH NGUMBUL", "60714242", "Tulakan"],
+["MI MUHAMMADIYAH PADI I", "60714243", "Tulakan"],
+["MI MUHAMMADIYAH PADI II", "60714244", "Tulakan"],
+["MI MUHAMMADIYAH PADI III", "60714245", "Tulakan"],
+["MI MUHAMMADIYAH PADI IV", "60714246", "Tulakan"],
+["MI MUHAMMADIYAH WONOANTI I", "60714247", "Tulakan"],
+["MI MUHAMMADIYAH WONOANTI II", "60714248", "Tulakan"],
+["MI MUHAMMADIYAH WONOANTI III", "60714249", "Tulakan"],
+["MI NU AL MUTAQIN", "69881873", "Tulakan"],
+["MI NU DARUSSALAM", "69886338", "Tulakan"],
+["MIN 1 PACITAN", "60714227", "Tulakan"],
+["MIN 2 PACITAN", "60714226", "Tulakan"],
+["SD NEGERI BUBAKAN I", "20511489", "Tulakan"],
+["SD NEGERI BUBAKAN II", "20511488", "Tulakan"],
+["SD NEGERI BUNGUR", "20511496", "Tulakan"],
+["SD NEGERI GASANG I", "20511475", "Tulakan"],
+["SD NEGERI GASANG II", "20511476", "Tulakan"],
+["SD NEGERI JATIGUNUNG I", "20511509", "Tulakan"],
+["SD NEGERI JATIGUNUNG II", "20511508", "Tulakan"],
+["SD NEGERI JATIGUNUNG III", "20511516", "Tulakan"],
+["SD NEGERI JATIGUNUNG IV", "20511517", "Tulakan"],
+["SD NEGERI JETAK I", "20511518", "Tulakan"],
+["SD NEGERI JETAK II", "20511507", "Tulakan"],
+["SD NEGERI KALIKUNING I", "20511412", "Tulakan"],
+["SD NEGERI KALIKUNING II", "20511413", "Tulakan"],
+["SD NEGERI KALIKUNING III", "20511421", "Tulakan"],
+["SD NEGERI KALIKUNING IV", "20511420", "Tulakan"],
+["SD NEGERI KETRO II", "20511464", "Tulakan"],
+["SD NEGERI KETRO III", "20511462", "Tulakan"],
+["SD NEGERI KETRO IV", "20511461", "Tulakan"],
+["SD NEGERI KETRO V", "20511460", "Tulakan"],
+["SD NEGERI KLUWIH I", "20511432", "Tulakan"],
+["SD NEGERI KLUWIH II", "20511433", "Tulakan"],
+["SD NEGERI LOSARI I", "20511441", "Tulakan"],
+["SD NEGERI LOSARI II", "20511440", "Tulakan"],
+["SD NEGERI LOSARI IV", "20511439", "Tulakan"],
+["SD NEGERI NGILE I", "20510860", "Tulakan"],
+["SD NEGERI NGILE II", "20510859", "Tulakan"],
+["SD NEGERI NGLARAN I", "20510858", "Tulakan"],
+["SD NEGERI NGLARAN II", "20510857", "Tulakan"],
+["SD NEGERI NGLARAN III", "20510856", "Tulakan"],
+["SD NEGERI NGUMBUL I", "20510866", "Tulakan"],
+["SD NEGERI NGUMBUL II", "20510865", "Tulakan"],
+["SD NEGERI NGUMBUL III", "20510864", "Tulakan"],
+["SD NEGERI PADI I", "20510919", "Tulakan"],
+["SD NEGERI PADI II", "20510918", "Tulakan"],
+["SD NEGERI PADI III", "20510917", "Tulakan"],
+["SD NEGERI TULAKAN I", "20511025", "Tulakan"],
+["SD NEGERI TULAKAN II", "20511024", "Tulakan"],
+["SD NEGERI TULAKAN III", "20511023", "Tulakan"],
+["SD NEGERI WONOANTI I", "20511091", "Tulakan"],
+["SD NEGERI WONOANTI II", "20511090", "Tulakan"],
+["SD NEGERI WONOSIDI I", "20511084", "Tulakan"],
+["SD NEGERI WONOSIDI II", "20511083", "Tulakan"],
+["SD NEGERI WONOSIDI III", "20511082", "Tulakan"],
+["SD NEGERI WONOSIDI IV", "20511071", "Tulakan"],
+["SD NEGERI WONOSIDI V", "20511070", "Tulakan"],
+["SD Negeri KETRO 1", "20511454", "Tulakan"],
+["SD Negeri KETRO 6", "20557632", "Tulakan"],
+["SD Negeri Kalikuning V", "20557631", "Tulakan"]
+];
+var FB=null;
+try{
+  firebase.initializeApp({
+    apiKey: "AIzaSyCRJo9Xou0X9K3ZGlvmArtUOod9ohR4lQk",
+    authDomain: "database-mpi-spendaka.firebaseapp.com",
+    projectId: "database-mpi-spendaka",
+    storageBucket: "database-mpi-spendaka.firebasestorage.app",
+    messagingSenderId: "909550540115",
+    appId: "1:909550540115:web:efcbb3efc2d138306bfda6"
+  });
+  FB=firebase.firestore();
+}catch(e){FB=null;}
+
+var G={authed:false,role:null,sekolah:null,rows:[],loading:false,error:null,
+  tab:"matriks",kelasFilter:"",kecFilter:"",namaSearch:"",materiFilter:MATERI[0],adminSekolah:"__all"};
+try{
+  var auth=JSON.parse(sessionStorage.getItem("guru_auth")||"null");
+  if(auth&&(auth.role==="admin"||auth.role==="sekolah")){
+    G.authed=true;G.role=auth.role;G.sekolah=auth.sekolah||null;
+  }
+}catch(e){}
+
+function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+function fmtNilai(n){return (Math.round(n*10)/10).toFixed(1).replace(".",",");}
+function fmtDur(sec){
+  if(sec==null)return "-";
+  sec=Math.max(0,Math.round(sec));
+  var m=Math.floor(sec/60),d=sec%60;
+  return m+" m "+(d<10?"0":"")+d+" d";
+}
+function fmtWaktu(ts){
+  if(!ts)return "-";
+  try{
+    var d=ts.toDate?ts.toDate():new Date(ts);
+    return d.toLocaleDateString("id-ID",{day:"numeric",month:"short"})+" "+d.toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"});
+  }catch(e){return "-";}
+}
+function num(v){var n=Number(v);return isNaN(n)?0:n;}
+function nilaiOf(r){var v=(r.nilai!=null?r.nilai:r.skor);return num(v);}
+function studentKey(r){
+  return (r.nama||"").trim().toLowerCase()+"|"+(r.kelas||"")+"|"+(r.sekolah||"").trim().toLowerCase();
+}
+function schoolComboHTML(id,inputId,listId,val){
+  return '<div class="g-dd" id="'+id+'"><input id="'+inputId+'" class="g-input" type="text" autocomplete="off" placeholder="Ketik untuk cari sekolah..." value="'+esc(val||"")+'"><div id="'+listId+'" class="g-ddlist"></div></div>';
+}
+function setupCombo(wrapId,inputId,listId,onPick,initial){
+  var inp=document.getElementById(inputId),list=document.getElementById(listId);
+  if(!inp||!list)return;
+  var selected=initial||"";
+  function matches(q){
+    var query=(q||"").trim().toLowerCase();
+    return SCHOOLS.filter(function(s){return !query||s[0].toLowerCase().indexOf(query)>=0||s[2].toLowerCase().indexOf(query)>=0;}).slice(0,60);
+  }
+  function draw(){
+    var m=matches(inp.value);
+    list.innerHTML=m.length?m.map(function(s){
+      return '<div class="g-dditem" data-v="'+esc(s[0])+'"><b>'+esc(s[0])+'</b><span>Kec. '+esc(s[2])+"</span></div>";
+    }).join(""):'<div class="g-ddempty">Sekolah tidak ditemukan</div>';
+    list.style.display="block";
+  }
+  inp.addEventListener("input",draw);
+  inp.addEventListener("focus",draw);
+  list.addEventListener("click",function(e){
+    var it=e.target.closest(".g-dditem");if(!it)return;
+    selected=it.getAttribute("data-v");inp.value=selected;list.style.display="none";
+    if(onPick)onPick(selected);
+  });
+  document.addEventListener("click",function(e){
+    var w=document.getElementById(wrapId);
+    if(w&&!w.contains(e.target))list.style.display="none";
+  });
+  function get(){return selected;}
+  function set(v){selected=v;inp.value=v||"";}
+  return{get:get,set:set};
+}
+var loginCombo=null,dashCombo=null;
+
+function renderLogin(err){
+  document.getElementById("g-body").innerHTML=
+    '<h2 class="g-title">📊 Rekap Nilai Try Out TKA</h2>'+
+    '<p class="g-sub"><b>Try Out TKA SD/MI</b> — Halaman Guru<br>Pilih sekolahmu, lalu masukkan PIN (NPSN sekolah). PIN master berlaku untuk melihat semua sekolah.</p>'+
+    '<div class="g-label">Nama Sekolah</div>'+schoolComboHTML("g-ldd","g-sekolah-input","g-sekolah-list","")+
+    '<div class="g-label">PIN (NPSN / PIN Master)</div>'+
+    '<input id="g-pin" class="g-input" type="password" inputmode="numeric" placeholder="Masukkan PIN...">'+
+    '<button class="g-btn" id="g-login-btn">Masuk</button>'+
+    '<div class="g-err">'+(err?esc(err):"")+"</div>";
+  loginCombo=setupCombo("g-ldd","g-sekolah-input","g-sekolah-list",null,"");
+  document.getElementById("g-login-btn").addEventListener("click",tryLogin);
+  document.getElementById("g-pin").addEventListener("keydown",function(e){if(e.key==="Enter")tryLogin();});
+}
+function tryLogin(){
+  var pin=document.getElementById("g-pin").value.trim();
+  var sekolah=loginCombo?loginCombo.get():"";
+  if(pin===MASTER_PIN){
+    G.authed=true;G.role="admin";G.sekolah=null;
+  }else{
+    var found=SCHOOLS.filter(function(s){return s[0]===sekolah&&s[1]===pin;})[0];
+    if(!found){renderLogin("Sekolah atau PIN tidak cocok. PIN sekolah adalah nomor NPSN.");return;}
+    G.authed=true;G.role="sekolah";G.sekolah=found[0];
+  }
+  try{sessionStorage.setItem("guru_auth",JSON.stringify({role:G.role,sekolah:G.sekolah}));}catch(e){}
+  loadData();
+}
+function loadData(){
+  if(!FB){G.error="Database tidak terhubung.";renderDash();return;}
+  G.loading=true;renderDash();
+  FB.collection(COLLECTION).orderBy("createdAt","desc").limit(3000).get()
+    .then(function(snap){
+      G.rows=[];
+      snap.forEach(function(doc){G.rows.push(doc.data());});
+      G.loading=false;G.error=null;renderDash();
+    })
+    .catch(function(e){G.loading=false;G.error="Gagal memuat data: "+(e.message||e);renderDash();});
+}
+function scopedRows(){
+  if(G.role==="sekolah")return G.rows.filter(function(r){return r.sekolah===G.sekolah;});
+  if(G.adminSekolah&&G.adminSekolah!=="__all")return G.rows.filter(function(r){return r.sekolah===G.adminSekolah;});
+  return G.rows.slice();
+}
+function filteredRows(){
+  var rows=scopedRows();
+  if(G.kelasFilter)rows=rows.filter(function(r){return String(r.kelas||"").indexOf(G.kelasFilter)===0;});
+  if(G.kecFilter)rows=rows.filter(function(r){return (r.kecamatan||"")===G.kecFilter;});
+  if(G.namaSearch){
+    var q=G.namaSearch.trim().toLowerCase();
+    rows=rows.filter(function(r){return (r.nama||"").toLowerCase().indexOf(q)>=0;});
+  }
+  return rows;
+}
+/* Peta nilai terbaik per siswa per materi */
+function bestMap(rows){
+  var map=new Map();
+  rows.forEach(function(r){
+    var k=studentKey(r);
+    if(!map.has(k))map.set(k,{nama:r.nama||"",kelas:r.kelas||"",sekolah:r.sekolah||"",kecamatan:r.kecamatan||"",bests:{},counts:{}});
+    var s=map.get(k),m=r.mode||"";
+    s.counts[m]=(s.counts[m]||0)+1;
+    var v=nilaiOf(r);
+    if(s.bests[m]==null||v>s.bests[m])s.bests[m]=v;
+  });
+  return map;
+}
+function avgBest(s){
+  var vals=MATERI.map(function(m){return s.bests[m];}).filter(function(v){return v!=null;});
+  if(!vals.length)return 0;
+  return vals.reduce(function(a,b){return a+b;},0)/vals.length;
+}
+function matrixRows(){
+  var map=bestMap(filteredRows());
+  var arr=Array.from(map.values());
+  arr.sort(function(a,b){return avgBest(b)-avgBest(a)||a.nama.localeCompare(b.nama);});
+  return arr;
+}
+/* ===== Export Excel (.xlsx asli, tanpa dependensi) ===== */
+function crc32(bytes){
+  var table=crc32._t;
+  if(!table){
+    table=[];
+    for(var n=0;n<256;n++){var c=n;for(var k=0;k<8;k++)c=(c&1)?(0xEDB88320^(c>>>1)):(c>>>1);table[n]=c>>>0;}
+    crc32._t=table;
+  }
+  var crc=0xFFFFFFFF;
+  for(var i=0;i<bytes.length;i++)crc=table[(crc^bytes[i])&0xFF]^(crc>>>8);
+  return (crc^0xFFFFFFFF)>>>0;
+}
+function zipStore(files){
+  var enc=new TextEncoder();
+  var chunks=[],central=[];var offset=0;
+  function u16(n){return [n&0xFF,(n>>>8)&0xFF];}
+  function u32(n){return [n&0xFF,(n>>>8)&0xFF,(n>>>16)&0xFF,(n>>>24)&0xFF];}
+  files.forEach(function(f){
+    var name=enc.encode(f.name),data=f.data,crc=crc32(data);
+    var lh=[].concat(u32(0x04034b50),u16(20),u16(0x0800),u16(0),u16(0),u16(0x21),u32(crc),u32(data.length),u32(data.length),u16(name.length),u16(0));
+    chunks.push(new Uint8Array(lh),name,data);
+    var ch=[].concat(u32(0x02014b50),u16(20),u16(20),u16(0x0800),u16(0),u16(0),u16(0x21),u32(crc),u32(data.length),u32(data.length),u16(name.length),u16(0),u16(0),u16(0),u16(0),u32(0),u32(offset));
+    central.push(new Uint8Array(ch),name);
+    offset+=lh.length+name.length+data.length;
+  });
+  var cdSize=0;central.forEach(function(c){cdSize+=c.length;});
+  var end=new Uint8Array([].concat(u32(0x06054b50),u16(0),u16(0),u16(files.length),u16(files.length),u32(cdSize),u32(offset),u16(0)));
+  return new Blob(chunks.concat(central,[end]),{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
+}
+function xmlEsc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+function colName(i){var s="";i++;while(i>0){var m=(i-1)%26;s=String.fromCharCode(65+m)+s;i=Math.floor((i-1)/26);}return s;}
+function makeXLSX(header,rows,sheetName){
+  var enc=new TextEncoder();
+  function cellXml(ref,val){
+    if(val==null||val==="")return '<c r="'+ref+'"/>';
+    if(typeof val==="number")return '<c r="'+ref+'"><v>'+val+"</v></c>";
+    return '<c r="'+ref+'" t="inlineStr"><is><t xml:space="preserve">'+xmlEsc(val)+"</t></is></c>";
+  }
+  var all=[header].concat(rows);
+  var sheetRows=all.map(function(row,ri){
+    var cells=row.map(function(v,ci){return cellXml(colName(ci)+(ri+1),v);}).join("");
+    return '<row r="'+(ri+1)+'">'+cells+"</row>";
+  }).join("");
+  var widths=header.map(function(h,i){
+    var w=String(h).length+4;
+    rows.forEach(function(r){if(r[i]!=null)w=Math.max(w,String(r[i]).length+2);});
+    return '<col min="'+(i+1)+'" max="'+(i+1)+'" width="'+Math.min(48,Math.max(10,w))+'" customWidth="1"/>';
+  }).join("");
+  var sheet='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><cols>'+widths+'</cols><sheetData>'+sheetRows+'</sheetData></worksheet>';
+  var wb='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="'+xmlEsc(sheetName||"Sheet1")+'" sheetId="1" r:id="rId1"/></sheets></workbook>';
+  var ct='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/></Types>';
+  var rels='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>';
+  var wbRels='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/></Relationships>';
+  return zipStore([
+    {name:"[Content_Types].xml",data:enc.encode(ct)},
+    {name:"_rels/.rels",data:enc.encode(rels)},
+    {name:"xl/workbook.xml",data:enc.encode(wb)},
+    {name:"xl/_rels/workbook.xml.rels",data:enc.encode(wbRels)},
+    {name:"xl/worksheets/sheet1.xml",data:enc.encode(sheet)}
+  ]);
+}
+function exportExcel(){
+  var header=["Nama","Kelas","Sekolah","Kecamatan"].concat(MATERI);
+  var data=matrixRows().map(function(s){
+    return [s.nama,s.kelas,s.sekolah,s.kecamatan||""].concat(MATERI.map(function(m){
+      return s.bests[m]!=null?Math.round(s.bests[m]*10)/10:null;
+    }));
+  });
+  var blob=makeXLSX(header,data,"Rekap Nilai");
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement("a");
+  a.href=url;a.download="rekap-nilai-tryout-tka-sd.xlsx";
+  document.body.appendChild(a);a.click();
+  setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(url);},400);
+}
+
+function renderDash(){
+  var body=document.getElementById("g-body");
+  var title=G.role==="admin"?"Semua Sekolah (Admin)":esc(G.sekolah);
+  var h='<div class="g-meta"><div><b>📊 Rekap Nilai Try Out TKA SD/MI</b><span>'+title+"</span></div>"+
+    '<div><button class="g-btn sm ghost" id="g-refresh">↻ Muat Ulang</button> '+
+    '<button class="g-btn sm ghost" id="g-logout">Keluar</button></div></div>';
+  if(G.role==="admin"){
+    h+='<div class="g-label">Filter Sekolah</div>'+schoolComboHTML("g-ddd","g-dash-input","g-dash-list",G.adminSekolah==="__all"?"":G.adminSekolah)+
+      '<p class="g-mut">Kosongkan / pilih “Semua Sekolah” lewat tombol di bawah untuk melihat seluruh kabupaten.</p>'+
+      '<button class="g-btn sm" id="g-all-schools">Semua Sekolah</button>';
+  }
+  h+='<div class="g-tabs">'+
+    [["matriks","🧮 Matriks Nilai"],["peringkat","🏆 Peringkat per Materi"],["semua","📋 Semua Percobaan"],["kabupaten","🌍 Rekap Kabupaten"]].map(function(t){
+      return '<button class="g-tab'+(G.tab===t[0]?" sel":"")+'" data-tab="'+t[0]+'">'+t[1]+"</button>";
+    }).join("")+"</div>";
+  if(G.tab!=="kabupaten"){
+    h+='<div class="g-filters">'+
+      '<input id="g-search" class="g-input" type="text" placeholder="🔍 Cari nama siswa..." value="'+esc(G.namaSearch)+'">'+
+      '<select id="g-kelas" class="g-select"><option value="">Semua Kelas</option>'+
+      ["VI"].map(function(k){return '<option value="'+k+'"'+(G.kelasFilter===k?" selected":"")+">Kelas "+k+"</option>";}).join("")+
+      "</select>"+
+      '<select id="g-kec" class="g-select"><option value="">Semua Kecamatan</option>'+
+      KECAMATAN.map(function(k){return '<option value="'+k+'"'+(G.kecFilter===k?" selected":"")+">Kec. "+k+"</option>";}).join("")+
+      "</select></div>";
+  }
+  if(G.loading)h+='<div class="g-empty">⏳ Memuat data nilai...</div>';
+  else if(G.error)h+='<div class="g-empty">⚠️ '+esc(G.error)+"</div>";
+  else if(G.tab==="matriks")h+=matrixHTML();
+  else if(G.tab==="peringkat")h+=peringkatHTML();
+  else if(G.tab==="semua")h+=semuaHTML();
+  else h+=kabupatenHTML();
+  body.innerHTML=h;
+  document.getElementById("g-refresh").addEventListener("click",loadData);
+  document.getElementById("g-logout").addEventListener("click",function(){
+    try{sessionStorage.removeItem("guru_auth");}catch(e){}
+    G.authed=false;G.rows=[];renderLogin();
+  });
+  body.querySelectorAll("[data-tab]").forEach(function(b){
+    b.addEventListener("click",function(){G.tab=b.getAttribute("data-tab");renderDash();});
+  });
+  if(G.role==="admin"){
+    dashCombo=setupCombo("g-ddd","g-dash-input","g-dash-list",function(v){G.adminSekolah=v;renderDash();},G.adminSekolah==="__all"?"":G.adminSekolah);
+    var allBtn=document.getElementById("g-all-schools");
+    if(allBtn)allBtn.addEventListener("click",function(){G.adminSekolah="__all";renderDash();});
+  }
+  var srch=document.getElementById("g-search");
+  if(srch)srch.addEventListener("input",function(){G.namaSearch=srch.value;refreshTableOnly();});
+  var kls=document.getElementById("g-kelas");
+  if(kls)kls.addEventListener("change",function(){G.kelasFilter=kls.value;refreshTableOnly();});
+  var kec=document.getElementById("g-kec");
+  if(kec)kec.addEventListener("change",function(){G.kecFilter=kec.value;refreshTableOnly();});
+  bindTabControls();
+}
+function refreshTableOnly(){
+  var wrap=document.getElementById("g-table-zone");if(!wrap){renderDash();return;}
+  if(G.tab==="matriks")wrap.innerHTML=matrixHTML();
+  else if(G.tab==="peringkat")wrap.innerHTML=peringkatHTML();
+  else if(G.tab==="semua")wrap.innerHTML=semuaHTML();
+  bindTabControls();
+}
+function bindTabControls(){
+  var matSel=document.getElementById("g-materi-sel");
+  if(matSel)matSel.addEventListener("change",function(){G.materiFilter=matSel.value;refreshTableOnly();});
+  var exp=document.getElementById("g-export");
+  if(exp)exp.addEventListener("click",exportExcel);
+}
+function statsHTML(rows,students){
+  var schools=new Set(rows.map(function(r){return r.sekolah;})).size;
+  return '<div class="g-stats">'+
+    '<div class="g-stat"><b>'+rows.length+'</b><span>Total Percobaan</span></div>'+
+    '<div class="g-stat"><b>'+students+'</b><span>Siswa Unik</span></div>'+
+    '<div class="g-stat"><b>'+schools+'</b><span>Sekolah</span></div></div>';
+}
+function matrixHTML(){
+  var rows=filteredRows();
+  var arr=matrixRows();
+  var h='<div id="g-table-zone-inner">';
+  h+=statsHTML(rows,arr.length);
+  h+='<div class="g-toolbar"><button class="g-btn sm" id="g-export">⬇ Export Excel</button></div>';
+  if(!arr.length)return h+'<div class="g-empty">Belum ada nilai pada cakupan ini.<br>Siswa yang sudah menyelesaikan try out akan muncul di sini.</div></div>';
+  h+='<div class="g-tablewrap"><table class="g-table matrix"><tr><th>Nama</th><th>Kelas</th><th>Sekolah</th><th>Kecamatan</th>'+
+    MATERI.map(function(m){return '<th class="num">'+esc(m)+"</th>";}).join("")+"</tr>";
+  arr.forEach(function(s){
+    h+="<tr><td><b>"+esc(s.nama)+"</b></td><td>"+esc(s.kelas)+"</td><td>"+esc(s.sekolah)+"</td><td>"+esc(s.kecamatan||"")+"</td>"+
+      MATERI.map(function(m){
+        return s.bests[m]!=null
+          ? '<td class="num"><span class="g-nilai">'+fmtNilai(s.bests[m])+'</span><br><span class="g-mut">'+s.counts[m]+"× main</span></td>"
+          : '<td class="num" style="color:var(--muted)">—</td>';
+      }).join("")+"</tr>";
+  });
+  h+="</table></div>";
+  h+='<p class="g-mut">Setiap kolom materi berisi <b>nilai terbaik</b> siswa pada materi itu; “—” berarti belum pernah mengerjakan materi tersebut. Tombol Export Excel mengunduh tabel ini (mengikuti filter kecamatan, kelas &amp; pencarian yang aktif) sebagai berkas .xlsx.</p>';
+  return h+"</div>";
+}
+function bestForMateri(rows,materi){
+  var best=new Map();
+  rows.forEach(function(r){
+    if(r.mode!==materi)return;
+    var k=studentKey(r),v=nilaiOf(r);
+    if(!best.has(k)||v>nilaiOf(best.get(k)))best.set(k,r);
+  });
+  return Array.from(best.values()).sort(function(a,b){
+    return nilaiOf(b)-nilaiOf(a)||num(b.akurasi)-num(a.akurasi);
+  });
+}
+function peringkatHTML(){
+  var rows=filteredRows();
+  var list=bestForMateri(rows,G.materiFilter);
+  var h='<div id="g-table-zone-inner">';
+  h+='<div class="g-label">Materi</div><select id="g-materi-sel" class="g-select">'+
+    MATERI.map(function(m){return '<option value="'+esc(m)+'"'+(G.materiFilter===m?" selected":"")+">"+esc(m)+"</option>";}).join("")+"</select>";
+  h+=statsHTML(rows.filter(function(r){return r.mode===G.materiFilter;}),list.length);
+  if(!list.length)return h+'<div class="g-empty">Belum ada nilai untuk materi ini pada cakupan terpilih.</div></div>';
+  h+='<div class="g-tablewrap"><table class="g-table"><tr><th>#</th><th>Nama</th><th>Kelas</th><th>Sekolah</th><th class="num">Nilai Terbaik</th><th class="num">Benar</th><th class="num">Poin</th><th class="num">Durasi</th><th>Waktu</th></tr>';
+  list.slice(0,20).forEach(function(r,i){
+    var medal=i===0?"🥇":i===1?"🥈":i===2?"🥉":(i+1)+".";
+    h+="<tr><td class='g-top'>"+medal+"</td><td><b>"+esc(r.nama)+"</b></td><td>"+esc(r.kelas)+"</td><td>"+esc(r.sekolah)+
+      '</td><td class="num"><span class="g-nilai">'+fmtNilai(nilaiOf(r))+"</span></td><td class='num'>"+num(r.benar)+"/30</td><td class='num'>"+(r.poin!=null?String(r.poin).replace(".",","):"-")+"</td><td class='num'>"+fmtDur(r.durasi)+"</td><td class='g-mut'>"+fmtWaktu(r.createdAt)+"</td></tr>";
+  });
+  return h+"</table></div></div>";
+}
+function semuaHTML(){
+  var rows=filteredRows().slice(0,500);
+  var h='<div id="g-table-zone-inner">';
+  if(!rows.length)return h+'<div class="g-empty">Belum ada percobaan pada cakupan ini.</div></div>';
+  h+='<div class="g-tablewrap"><table class="g-table"><tr><th>#</th><th>Nama</th><th>Kelas</th><th>Sekolah</th><th>Materi</th><th class="num">Nilai</th><th class="num">Benar</th><th class="num">Poin</th><th class="num">Durasi</th><th>Waktu</th></tr>';
+  rows.forEach(function(r,i){
+    h+="<tr><td>"+(i+1)+"</td><td><b>"+esc(r.nama)+"</b></td><td>"+esc(r.kelas)+"</td><td>"+esc(r.sekolah)+"</td><td>"+esc(r.mode)+
+      '</td><td class="num"><span class="g-nilai">'+fmtNilai(nilaiOf(r))+"</span></td><td class='num'>"+num(r.benar)+"/30</td><td class='num'>"+(r.poin!=null?String(r.poin).replace(".",","):"-")+"</td><td class='num'>"+fmtDur(r.durasi)+"</td><td class='g-mut'>"+fmtWaktu(r.createdAt)+"</td></tr>";
+  });
+  return h+"</table></div></div>";
+}
+function kabupatenHTML(){
+  var map=bestMap(G.rows);
+  var students=Array.from(map.values());
+  var top=students.slice().sort(function(a,b){return avgBest(b)-avgBest(a);}).slice(0,20);
+  var h='<div class="g-sectiontitle">🏆 Top Siswa Kabupaten (rata-rata nilai terbaik per materi)</div>';
+  if(!top.length)h+='<div class="g-empty">Belum ada data.</div>';
+  else{
+    h+='<div class="g-tablewrap"><table class="g-table"><tr><th>#</th><th>Nama</th><th>Sekolah</th><th class="num">Rata-rata</th><th class="num">Materi Dikerjakan</th></tr>';
+    top.forEach(function(s,i){
+      var n=MATERI.filter(function(m){return s.bests[m]!=null;}).length;
+      var medal=i===0?"🥇":i===1?"🥈":i===2?"🥉":(i+1)+".";
+      h+="<tr><td class='g-top'>"+medal+"</td><td><b>"+esc(s.nama)+"</b></td><td>"+esc(s.sekolah)+
+        '</td><td class="num"><span class="g-nilai">'+fmtNilai(avgBest(s))+"</span></td><td class='num'>"+n+"/4</td></tr>";
+    });
+    h+="</table></div>";
+  }
+  var bySchool=new Map();
+  students.forEach(function(s){
+    if(!bySchool.has(s.sekolah))bySchool.set(s.sekolah,[]);
+    bySchool.get(s.sekolah).push(s);
+  });
+  var rank=Array.from(bySchool.entries()).map(function(e){
+    var ss=e[1];
+    var avg=ss.reduce(function(a,s){return a+avgBest(s);},0)/ss.length;
+    var best=0;ss.forEach(function(s){MATERI.forEach(function(m){if(s.bests[m]!=null&&s.bests[m]>best)best=s.bests[m];});});
+    return{sekolah:e[0],siswa:ss.length,rata:avg,terbaik:best};
+  }).sort(function(a,b){return b.rata-a.rata;});
+  h+='<div class="g-sectiontitle">🏫 Peringkat Sekolah (rata-rata nilai terbaik siswa)</div>';
+  if(!rank.length)h+='<div class="g-empty">Belum ada data.</div>';
+  else{
+    h+='<div class="g-tablewrap"><table class="g-table"><tr><th>#</th><th>Sekolah</th><th class="num">Siswa</th><th class="num">Rata-rata</th><th class="num">Nilai Tertinggi</th></tr>';
+    rank.forEach(function(r,i){
+      h+="<tr><td>"+(i+1)+".</td><td><b>"+esc(r.sekolah)+"</b></td><td class='num'>"+r.siswa+"</td><td class='num'><span class='g-nilai'>"+fmtNilai(r.rata)+"</span></td><td class='num'>"+fmtNilai(r.terbaik)+"</td></tr>";
+    });
+    h+="</table></div>";
+  }
+  return h;
+}
+/* Catatan: zona tabel dibungkus agar filter tidak mengganggu fokus input */
+(function(){
+  var origRender=renderDash;
+  renderDash=function(){
+    origRender();
+    var zone=document.querySelector(".g-tabs");
+    var tz=document.getElementById("g-table-zone-inner");
+    if(tz&&!document.getElementById("g-table-zone")){
+      var d=document.createElement("div");d.id="g-table-zone";
+      tz.parentNode.insertBefore(d,tz);d.appendChild(tz);
+    }
+  };
+})();
+
+if(G.authed)loadData();else renderLogin();
+})();
+</script>
+</body></html>
